@@ -53,23 +53,17 @@ import java.io.IOException;
 
 import javax.annotation.Resource;
 
-
 /**
  * test of NotificationService
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = 
-{
-    "classpath:test-notify-gru.xml"}
- )
+@ContextConfiguration( locations = {
+    "classpath:test-notify-gru.xml"
+} )
 public class NotificationServiceTest
 {
-    @Resource( name = "testNotificationService.api.simpleRest" )
-    private NotificationService _notificationServiceApiSimpleRest;
     @Resource( name = "testNotificationService.api.httpAccess" )
     private NotificationService _notificationServiceApiHttpAccess;
-    @Resource( name = "testNotificationService.rest.simpleRest" )
-    private NotificationService _notificationServiceRestSimpleRest;
     @Resource( name = "testNotificationService.rest.httpAccess" )
     private NotificationService _notificationServiceRestHttpAccess;
     @Resource( name = "testNotificationServiceMock" )
@@ -79,25 +73,27 @@ public class NotificationServiceTest
     /**
      * Constructor, init the notification JSON
      *
-     * @throws JsonParseException exception
-     * @throws JsonMappingException exception
-     * @throws IOException exception
+     * @throws JsonParseException
+     *             exception
+     * @throws JsonMappingException
+     *             exception
+     * @throws IOException
+     *             exception
      */
-    public NotificationServiceTest(  ) throws JsonParseException, JsonMappingException, IOException
+    public NotificationServiceTest( ) throws JsonParseException, JsonMappingException, IOException
     {
-        ObjectMapper mapper = new ObjectMapper(  );
+        ObjectMapper mapper = new ObjectMapper( );
         mapper.enable( DeserializationFeature.UNWRAP_ROOT_VALUE );
-        _notification = mapper.readValue( getClass(  ).getResourceAsStream( "/notification.json" ),
-                Notification.class );
+        _notification = mapper.readValue( getClass( ).getResourceAsStream( "/notification.json" ), Notification.class );
 
-        //Init HttpAccess singleton through NPE exception due of lack of properties access
+        // Init HttpAccess singleton through NPE exception due of lack of properties access
         try
         {
-            HttpAccessService.getInstance(  );
+            HttpAccessService.getInstance( );
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
-            //do nothing
+            // do nothing
         }
     }
 
@@ -105,45 +101,26 @@ public class NotificationServiceTest
      * test send nodification with ApiManager Transport and HttpAccess Provider
      */
     @Test
-    public void testSendApiManagerHttpAccess(  )
+    public void testSendApiManagerHttpAccess( )
     {
         // can't work on localhost due to lutece-core dependency in library-httpaccess
         _notificationServiceApiHttpAccess.send( _notification );
     }
 
     /**
-     * test send nodification with ApiManager Transport and SimpleRest Provider
-     */
-    @Test
-    public void testSendApiManagerSimpleRest(  )
-    {
-        // currently KO due to header problem in the query
-        _notificationServiceApiSimpleRest.send( _notification );
-    }
-
-    /**
      * test send nodification with Rest Transport and HttpAccess Provider
      */
     @Test
-    public void testSendRestHttpAccess(  )
+    public void testSendRestHttpAccess( )
     {
         _notificationServiceRestHttpAccess.send( _notification );
-    }
-
-    /**
-     * test send nodification with Rest Transport and SimpleRest Provider
-     */
-    @Test
-    public void testSendRestSimpleRest(  )
-    {
-        _notificationServiceRestSimpleRest.send( _notification );
     }
 
     /**
      * test send nodification with mock
      */
     @Test
-    public void testSendMock(  )
+    public void testSendMock( )
     {
         _notificationServiceMock.send( _notification );
     }
@@ -152,12 +129,12 @@ public class NotificationServiceTest
      * test send nodification with mock and no spring beans
      */
     @Test
-    public void testSendMockNoSpring(  )
+    public void testSendMockNoSpring( )
     {
-        MockNotificationTransportRest mockTransport = new MockNotificationTransportRest(  );
+        MockNotificationTransportRest mockTransport = new MockNotificationTransportRest( );
         mockTransport.setNotificationEndPoint( "http://127.0.0.1:9092/lutece/rest/notification/send" );
 
-        //default mockTransport.httpTransport set with simpleRest
+        // default mockTransport.httpTransport set with simpleRest
         NotificationService notificationServiceNoSpring = new NotificationService( mockTransport );
 
         notificationServiceNoSpring.send( _notification );
